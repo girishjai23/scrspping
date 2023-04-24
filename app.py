@@ -6,6 +6,20 @@ from urllib.request import urlopen as uReq
 import logging
 logging.basicConfig(filename="scrapper.log" , level=logging.INFO)
 
+from pymongo.mongo_client import MongoClient
+
+uri = "mongodb+srv://girishjai23:jaiswal789@cluster0.bdmojr5.mongodb.net/?retryWrites=true&w=majority"
+
+# Create a new client and connect to the server
+client = MongoClient(uri)
+
+# Send a ping to confirm a successful connection
+# try:
+#     client.admin.command('ping')
+#     print("Pinged your deployment. You successfully connected to MongoDB!")
+# except Exception as e:
+#     print(e)
+
 app = Flask(__name__)
 
 @app.route("/", methods = ['GET'])
@@ -72,6 +86,9 @@ def index():
                           "Comment": custComment}
                 reviews.append(mydict)
             logging.info("log my final result {}".format(reviews))
+            db = client['reviews_scrap']
+            reviwe_col = db['review_scrap_data']
+            reviwe_col.insert_many(reviews)
             return render_template('result.html', reviews=reviews[0:(len(reviews)-1)])
         except Exception as e:
             logging.info(e)
